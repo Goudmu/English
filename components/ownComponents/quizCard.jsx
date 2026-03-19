@@ -5,13 +5,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { shuffleQuestionsAndChoices } from "@/lib/utils";
-import { allQuestions } from "@/lib/Allquestions";
+import { VocabQuestions } from "@/lib/VocabQuestion";
 
-export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
-  const total = Math.min(jumlahSoal, allQuestions.length);
+export function QuizCard({
+  jumlahSoal = 5,
+  setStarted,
+  setQuestionCount,
+  selectedCategory,
+}) {
+  const total = Math.min(jumlahSoal, VocabQuestions.length);
 
   const generateQuestions = () => {
-    const shuffled = shuffleQuestionsAndChoices(allQuestions);
+    const shuffled = shuffleQuestionsAndChoices(
+      VocabQuestions,
+      selectedCategory,
+    );
     return shuffled.slice(0, total);
   };
 
@@ -20,6 +28,7 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
   const [isReview, setIsReview] = useState(false);
   const [answers, setAnswers] = useState(() => Array(total).fill(null));
   const [isClient, setIsClient] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
 
   // set client flag on mount
   useEffect(() => {
@@ -60,7 +69,13 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
     setIsReview(false);
     setCurrentIndex(0);
     setStarted(false);
-    setQuestionCount(0);
+    setQuestionCount(50);
+    setIsBlurred(false);
+  };
+
+  // ✅ BLUR ANSWER
+  const blurAnswer = () => {
+    setIsBlurred(!isBlurred);
   };
 
   const goPrev = () => {
@@ -105,7 +120,6 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
           <CardTitle className="text-lg font-medium leading-relaxed">
             {current.question}
           </CardTitle>
-
           <div className="shrink-0 text-right text-sm text-muted-foreground">
             <div>
               {currentIndex + 1} / {questions.length}
@@ -126,7 +140,8 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
                 "flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all",
                 getOptionStyles(index),
                 !isReview && "cursor-pointer",
-                isReview && "cursor-default"
+                isReview && "cursor-default",
+                isBlurred && "blur-xs",
               )}
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-current font-semibold">
@@ -135,16 +150,6 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
               <span className="text-base">{option}</span>
             </button>
           ))}
-
-          {/* ✅ Reason muncul setelah Submit, di bawah opsi terakhir (biasanya D) */}
-          {isReview && current.reason && (
-            <div className="mt-3 rounded-lg border p-4">
-              <div className="text-sm font-semibold">Reason</div>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {current.reason}
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="mt-6 flex items-center justify-between gap-3">
@@ -160,12 +165,18 @@ export function QuizCard({ jumlahSoal = 5, setStarted, setQuestionCount }) {
           <div className="flex gap-2">
             <Button
               variant="ghost"
+              onClick={blurAnswer}
+              className="cursor-pointer"
+            >
+              Blur
+            </Button>
+            <Button
+              variant="ghost"
               onClick={resetAll}
               className="cursor-pointer"
             >
               Reset
             </Button>
-
             {!isReview ? (
               isLastQuestion ? (
                 <Button onClick={submit} className="cursor-pointer">

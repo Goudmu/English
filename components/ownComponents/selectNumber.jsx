@@ -3,17 +3,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { allQuestions } from "@/lib/Allquestions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Allcategories, VocabQuestions } from "@/lib/VocabQuestion";
 
 export function SelectNumberQuestions({
   started,
   setStarted,
   questionCount,
   setQuestionCount,
+  selectedCategory,
+  setSelectedCategory,
 }) {
   const count = Math.min(
     Math.max(1, Number.parseInt(questionCount) || 1),
-    allQuestions.length
+    VocabQuestions.length,
   );
 
   const handleStart = () => {
@@ -35,21 +43,45 @@ export function SelectNumberQuestions({
                 htmlFor="questionCount"
                 className="text-sm font-medium text-muted-foreground"
               >
-                How many questions do you want? (1-{allQuestions.length})
+                How many questions do you want? (1-{VocabQuestions.length})
               </label>
               <Input
                 id="questionCount"
                 type="number"
                 min="1"
-                max={allQuestions.length}
+                max={VocabQuestions.length}
                 placeholder="Enter number of questions"
                 value={questionCount}
                 onChange={(e) => setQuestionCount(e.target.value)}
               />
             </div>
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="capitalize cursor-pointer w-full"
+                  >
+                    {selectedCategory}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {Allcategories.map((kategori) => (
+                    <DropdownMenuItem
+                      key={kategori}
+                      onClick={() => setSelectedCategory(kategori)}
+                      className="cursor-pointer"
+                    >
+                      {kategori}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <Button
               onClick={handleStart}
               disabled={!questionCount || Number.parseInt(questionCount) < 1}
+              className="cursor-pointer"
             >
               Start Quiz
             </Button>
