@@ -25,10 +25,12 @@ export function TrackingQuestions({
                 onClick={() => setCurrentIndex(questionNumber - 1)}
                 variant="outline"
                 className={`h-10 w-10 rounded-md p-0 text-sm font-medium transition-all cursor-pointer ${
-                  currentIndex === questionNumber - 1
-                    ? "border-black-500 bg-gray-200 text-black hover:bg-gray-400"
+                  questionNumber - 1 === currentIndex
+                    ? "bg-gray-400 text-white"
                     : questions[questionNumber - 1].answer ==
-                        answers[questionNumber - 1]
+                        questions[questionNumber - 1].choices[
+                          answers[questionNumber - 1]
+                        ]
                       ? "border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
                       : questions[questionNumber - 1].answer !=
                           answers[questionNumber - 1]
@@ -80,9 +82,11 @@ export function TrackingQuestions({
                   currentIndex === questionNumber - 1 ? "default" : "outline"
                 }
                 className={`h-10 w-10 rounded-md p-0 text-sm font-medium transition-all cursor-pointer ${
-                  answers[questionNumber - 1] !== null
-                    ? "border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
-                    : ""
+                  questionNumber - 1 === currentIndex
+                    ? "bg-gray-400 text-white"
+                    : answers[questionNumber - 1] !== null
+                      ? "border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
+                      : ""
                 }`}
               >
                 {questionNumber}
