@@ -6,20 +6,41 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { shuffleQuestionsAndChoices } from "@/lib/utils";
 import { VocabQuestions } from "@/lib/VocabQuestion";
+import { SeinQuestions } from "@/lib/SeinQuestion";
+import { HabenQuestions } from "@/lib/HabenQuestion";
 
 export function QuizCard({
   jumlahSoal = 5,
   setStarted,
   setQuestionCount,
   selectedCategory,
+  selectedCategoryForQuiz = "vocab",
 }) {
-  const total = Math.min(jumlahSoal, VocabQuestions.length);
+  let total = 0;
 
   const generateQuestions = () => {
-    const shuffled = shuffleQuestionsAndChoices(
-      VocabQuestions,
-      selectedCategory,
-    );
+    let shuffled = [];
+    let total = 0;
+    if (selectedCategoryForQuiz === "vocab") {
+      shuffled = shuffleQuestionsAndChoices(
+        VocabQuestions,
+        selectedCategory,
+        selectedCategoryForQuiz,
+      );
+    } else if (selectedCategoryForQuiz === "sein") {
+      shuffled = shuffleQuestionsAndChoices(
+        SeinQuestions,
+        selectedCategory,
+        selectedCategoryForQuiz,
+      );
+    } else if (selectedCategoryForQuiz === "haben") {
+      shuffled = shuffleQuestionsAndChoices(
+        HabenQuestions,
+        selectedCategory,
+        selectedCategoryForQuiz,
+      );
+    }
+    total = Math.min(jumlahSoal, shuffled.length);
     return shuffled.slice(0, total);
   };
 
@@ -73,6 +94,13 @@ export function QuizCard({
     setIsBlurred(false);
   };
 
+  // ✅ RESET JAWABAN DI SOAL INI
+  const resetThisQuestions = () => {
+    setAnswers(Array(questions.length).fill(null));
+    setIsReview(false);
+    setIsBlurred(false);
+  };
+
   // ✅ BLUR ANSWER
   const blurAnswer = () => {
     setIsBlurred(!isBlurred);
@@ -120,6 +148,18 @@ export function QuizCard({
           <CardTitle className="text-lg font-medium leading-relaxed">
             {current.question}
           </CardTitle>
+          <div>
+            {isReview && (
+              <div className="rounded px-2 py-1">
+                Score :{" "}
+                {
+                  questions.filter((q, i) => q.answer === q.choices[answers[i]])
+                    .length
+                }{" "}
+                / {questions.length}
+              </div>
+            )}
+          </div>
           <div className="shrink-0 text-right text-sm text-muted-foreground">
             <div>
               {currentIndex + 1} / {questions.length}
@@ -128,7 +168,6 @@ export function QuizCard({
           </div>
         </div>
       </CardHeader>
-
       <CardContent>
         <div className="flex flex-col gap-3">
           {current.choices.map((option, index) => (
@@ -153,49 +192,52 @@ export function QuizCard({
         </div>
 
         <div className="mt-6 flex items-center justify-between gap-3">
-          <Button
-            variant="outline"
-            onClick={goPrev}
-            disabled={currentIndex === 0}
-            className={"cursor-pointer"}
-          >
-            Previous
-          </Button>
-
           <div className="flex gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
+              onClick={goPrev}
+              disabled={currentIndex === 0}
+              className={"cursor-pointer"}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={goNext}
+              disabled={isLastQuestion}
+              className="cursor-pointer"
+            >
+              Next
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
               onClick={blurAnswer}
               className="cursor-pointer"
             >
               Blur
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={resetAll}
+              className="cursor-pointer"
+            >
+              Back
+            </Button>
+            <Button
+              variant="outline"
+              onClick={resetThisQuestions}
               className="cursor-pointer"
             >
               Reset
             </Button>
-            {!isReview ? (
-              isLastQuestion ? (
-                <Button onClick={submit} className="cursor-pointer">
-                  Submit
-                </Button>
-              ) : (
-                <Button onClick={goNext} className="cursor-pointer">
-                  Next
-                </Button>
-              )
-            ) : (
-              <Button
-                onClick={goNext}
-                disabled={isLastQuestion}
-                className="cursor-pointer"
-              >
-                Next
-              </Button>
-            )}
+            <Button
+              onClick={submit}
+              disabled={isReview}
+              className="cursor-pointer"
+            >
+              Submit
+            </Button>
           </div>
         </div>
       </CardContent>
