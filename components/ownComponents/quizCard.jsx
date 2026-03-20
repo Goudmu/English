@@ -8,6 +8,7 @@ import { shuffleQuestionsAndChoices } from "@/lib/utils";
 import { VocabQuestions } from "@/lib/VocabQuestion";
 import { SeinQuestions } from "@/lib/SeinQuestion";
 import { HabenQuestions } from "@/lib/HabenQuestion";
+import { VerbQuestions } from "@/lib/VerbQuestion";
 
 export function QuizCard({
   jumlahSoal = 5,
@@ -36,6 +37,12 @@ export function QuizCard({
     } else if (selectedCategoryForQuiz === "haben") {
       shuffled = shuffleQuestionsAndChoices(
         HabenQuestions,
+        selectedCategory,
+        selectedCategoryForQuiz,
+      );
+    } else if (selectedCategoryForQuiz === "kata kerja kalimat") {
+      shuffled = shuffleQuestionsAndChoices(
+        VerbQuestions,
         selectedCategory,
         selectedCategoryForQuiz,
       );
@@ -142,13 +149,13 @@ export function QuizCard({
   const isLastQuestion = currentIndex === questions.length - 1;
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-4xl">
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="text-lg font-medium leading-relaxed">
             {current.question}
           </CardTitle>
-          <div>
+          <div className="shrink-0 text-right text-sm text-muted-foreground">
             {isReview && (
               <div className="rounded px-2 py-1">
                 Score :{" "}
