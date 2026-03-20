@@ -9,6 +9,7 @@ import { VocabQuestions } from "@/lib/VocabQuestion";
 import { SeinQuestions } from "@/lib/SeinQuestion";
 import { HabenQuestions } from "@/lib/HabenQuestion";
 import { VerbQuestions } from "@/lib/VerbQuestion";
+import { TrackingQuestions } from "./trackingQuestions";
 
 export function QuizCard({
   jumlahSoal = 5,
@@ -149,105 +150,118 @@ export function QuizCard({
   const isLastQuestion = currentIndex === questions.length - 1;
 
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle className="text-lg font-medium leading-relaxed">
-            {current.question}
-          </CardTitle>
-          <div className="shrink-0 text-right text-sm text-muted-foreground">
-            {isReview && (
-              <div className="rounded px-2 py-1">
-                Score :{" "}
-                {
-                  questions.filter((q, i) => q.answer === q.choices[answers[i]])
-                    .length
-                }{" "}
-                / {questions.length}
-              </div>
-            )}
-          </div>
-          <div className="shrink-0 text-right text-sm text-muted-foreground">
-            <div>
-              {currentIndex + 1} / {questions.length}
-            </div>
-            {isReview && <div className="text-xs">Review</div>}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-3">
-          {current.choices.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleOptionClick(index)}
-              disabled={isReview}
-              className={cn(
-                "flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all",
-                getOptionStyles(index),
-                !isReview && "cursor-pointer",
-                isReview && "cursor-default",
-                isBlurred && "blur-xs",
+    <div className="flex flex-row gap-2">
+      <div className="w-2/5">
+        <TrackingQuestions
+          jumlahSoal={questions.length}
+          answers={answers}
+          setCurrentIndex={setCurrentIndex}
+          currentIndex={currentIndex}
+          isReview={isReview}
+          questions={questions}
+        />
+      </div>
+      <Card className="w-3/5">
+        <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <CardTitle className="text-lg font-medium leading-relaxed">
+              {current.question}
+            </CardTitle>
+            <div className="shrink-0 text-right text-sm text-muted-foreground">
+              {isReview && (
+                <div className="rounded px-2 py-1">
+                  Score :{" "}
+                  {
+                    questions.filter(
+                      (q, i) => q.answer === q.choices[answers[i]],
+                    ).length
+                  }{" "}
+                  / {questions.length}
+                </div>
               )}
-            >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-current font-semibold">
-                {String.fromCharCode(65 + index)}
-              </span>
-              <span className="text-base">{option}</span>
-            </button>
-          ))}
-        </div>
+            </div>
+            <div className="shrink-0 text-right text-sm text-muted-foreground">
+              <div>
+                {currentIndex + 1} / {questions.length}
+              </div>
+              {isReview && <div className="text-xs">Review</div>}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3">
+            {current.choices.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleOptionClick(index)}
+                disabled={isReview}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all",
+                  getOptionStyles(index),
+                  !isReview && "cursor-pointer",
+                  isReview && "cursor-default",
+                  isBlurred && "blur-xs",
+                )}
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-current font-semibold">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span className="text-base">{option}</span>
+              </button>
+            ))}
+          </div>
 
-        <div className="mt-6 flex items-center justify-between gap-3">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={goPrev}
-              disabled={currentIndex === 0}
-              className={"cursor-pointer"}
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={goNext}
-              disabled={isLastQuestion}
-              className="cursor-pointer"
-            >
-              Next
-            </Button>
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={goPrev}
+                disabled={currentIndex === 0}
+                className={"cursor-pointer"}
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={goNext}
+                disabled={isLastQuestion}
+                className="cursor-pointer"
+              >
+                Next
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={blurAnswer}
+                className="cursor-pointer"
+              >
+                Blur
+              </Button>
+              <Button
+                variant="outline"
+                onClick={resetAll}
+                className="cursor-pointer"
+              >
+                Back
+              </Button>
+              <Button
+                variant="outline"
+                onClick={resetThisQuestions}
+                className="cursor-pointer"
+              >
+                Reset
+              </Button>
+              <Button
+                onClick={submit}
+                disabled={isReview}
+                className="cursor-pointer"
+              >
+                Submit
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={blurAnswer}
-              className="cursor-pointer"
-            >
-              Blur
-            </Button>
-            <Button
-              variant="outline"
-              onClick={resetAll}
-              className="cursor-pointer"
-            >
-              Back
-            </Button>
-            <Button
-              variant="outline"
-              onClick={resetThisQuestions}
-              className="cursor-pointer"
-            >
-              Reset
-            </Button>
-            <Button
-              onClick={submit}
-              disabled={isReview}
-              className="cursor-pointer"
-            >
-              Submit
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

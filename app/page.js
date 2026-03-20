@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { QuizCard } from "@/components/ownComponents/quizCard";
 import { SelectNumberQuestions } from "@/components/ownComponents/selectNumber";
+import { TrackingQuestions } from "@/components/ownComponents/trackingQuestions";
 
 export default function Page() {
   const [started, setStarted] = useState(false);
@@ -25,8 +26,8 @@ export default function Page() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="flex w-full max-w-2xl flex-col gap-4">
+    <main className="flex min-h-screen items-center justify-center bg-background p-4 gap-4">
+      <div className="flex w-full max-w-6xl flex-col gap-4">
         <QuizCard
           jumlahSoal={questionCount}
           selectedCategory={selectedCategory}

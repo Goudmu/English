@@ -29,7 +29,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="flex w-full max-w-4xl flex-col gap-4">
+      <div className="flex w-full max-w-2xl flex-col gap-4">
         <QuizCard
           selectedCategoryForQuiz={selectedCategoryForQuiz}
           jumlahSoal={questionCount}
